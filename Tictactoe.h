@@ -2,8 +2,7 @@
 #define TICTACTOE_H
 #include <vector>
 #include <memory>
-
-using namespace std;
+#include <set>
 
 class Tictactoe {
     private:
@@ -11,14 +10,18 @@ class Tictactoe {
         int numPlayers = 0;
         int turn = 1;
         int playerMove = 0;
-        vector<vector<string>> grid;
-        vector<int> computerMoves;
-        vector<bool> filled;
+        std::vector<std::vector<std::string>> grid;
+        std::vector<int> computerMoves;
+        std::vector<bool> filled;
+        
+        bool checkCrossed(std::set<std::string> line);
     
     public:
         Tictactoe();
-        void displayGrid();
         void setGrid(int grid_size);
+        void displayGrid();
+        void setNumPlayers();
+        int isComplete();
 };
 
 #endif //TICTACTOE_H

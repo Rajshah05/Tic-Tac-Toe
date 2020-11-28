@@ -2,7 +2,7 @@
 #include <memory>
 
 int main() {
-    unique_ptr<Tictactoe> game(new Tictactoe);
+    std::unique_ptr<Tictactoe> game(new Tictactoe);
     game->setGrid(3);
     game->displayGrid();
 }
