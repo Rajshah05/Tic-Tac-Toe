@@ -9,19 +9,27 @@ class Tictactoe {
         int gridSize = 3;
         int numPlayers = 0;
         int turn = 1;
-        int playerMove = 0;
+        int currentMove = 0;
         std::vector<std::vector<std::string>> grid;
-        std::vector<int> computerMoves;
         std::vector<bool> filled;
         
         bool checkCrossed(std::set<std::string> line);
+        void putMove(int tempTurn, int tempMove);
+        int minimax(int);
+        int findScore(int tempTurn);
     
     public:
         Tictactoe();
-        void setGrid(int grid_size);
+        void setGrid(int);
         void displayGrid();
         void setNumPlayers();
         int isComplete();
+        int optimalComputerMove(int);
+        void putMove();
+        void removeMove(int);
+        // bool isAllFilled();
+        bool isMoveValid();
+        int play();
 };
 
 #endif //TICTACTOE_H
