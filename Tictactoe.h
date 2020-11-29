@@ -27,9 +27,9 @@ class Tictactoe {
         int optimalComputerMove(int);
         void putMove();
         void removeMove(int);
-        // bool isAllFilled();
         bool isMoveValid();
-        int play();
+        void changeTurn();
+        std::string play();
 };
 
 #endif //TICTACTOE_H

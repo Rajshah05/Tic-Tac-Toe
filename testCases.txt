@@ -1,0 +1,17 @@
+#!/bin/bash
+# test cases
+
+
+1
+5
+9
+2
+4
+7
+read RESULT
+if [ RESULT == "Match Draw" ]
+then
+echo "test case 1 passed"
+else
+echo "test case 1 failed. output shoud be - Match Draw"
+
