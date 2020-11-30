@@ -33,7 +33,7 @@ Used Catch2 framework to write test cases
 
 To run the test cases compile the test file using:
 
-	g++ -O1 catch_amalgamated.cpp test.cpp Tictactoe.cpp -o test
+	g++ -std=c++14 -O1 catch_amalgamated.cpp test.cpp Tictactoe.cpp -o test
 
 then run the test using:
 
