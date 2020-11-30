@@ -3,7 +3,6 @@
 #include <unordered_map>
 #include <set>
 
-
 Tictactoe::Tictactoe() {
     setGrid(3);
     setLineCount(3);
@@ -24,7 +23,7 @@ void Tictactoe::reset() {
     setLineCount(gridSize);
 }
 
-// creates a grid (board)
+// creates a grid (board) of size grid_size
 void Tictactoe::setGrid(int grid_size) {
     auto n = 1;
     gridSize = grid_size;
@@ -41,11 +40,17 @@ void Tictactoe::setGrid(int grid_size) {
     }
 }
 
-// 4-5 lines
+// setLineCount initializes an unordered_map, with two integer keys: 1 & 2 (for X and O respectively)
+// ,and another unordered_map as value whose integer keys (for gridSize 3) represent rows, columns, and diagonals as:
+// key 1,2,3 represents first, second, and third row
+// key 4,5,6 represents first, second, and third column
+// key 7, 8 represents left-right diagonal and right-left diagonal respecively
+// and its values represent the count of 'X' or 'O' in that particular row, column, and diagonal
+
 void Tictactoe::setLineCount(int grid_size) {
     for (int i = 1; i <=  grid_size+grid_size+2; i++) {
-        lineCountX[i] = 0;
-        lineCountO[i] = 0;
+        lineCount[1][i] = 0;
+        lineCount[2][i] = 0;
     }
 }
 
@@ -75,85 +80,70 @@ void Tictactoe::changeTurn() {
 }
 
 // checks rows, columns, and diagonals for all crosses or zeros and checks for draw
+// For 'X', if lineCount key 1 (which is another unordered_map) has any key whose corresponding value is equal to 3
+// then player 1 wins
+// Similarly, for 'O', if lineCount key 2 (which is another unordered_map) has any key whose corresponding value is equal to 3
+// then player 2 wins
 int Tictactoe::isComplete() {
-    for (auto x : lineCountX) {
-        if (x.second == 3) {
-            return 1;
+    for(auto x : lineCount) {
+        for (auto y : x.second) {
+            if (y.second == 3) {
+                return 1;
+            }
         }
     }
-    for (auto x : lineCountO) {
-        if (x.second == 3) {
-            return 1;
-        }
-    }
-    if(filledCount == gridSize*gridSize) {
+    if (filledCount == gridSize*gridSize) {
         return 2;
     }
     return 0;
 }
 
-// put move (X / O) in grid
-void Tictactoe::putMove() {
-    int x = currentMove-1;
-    int r = x/(gridSize);
-    int c = (x%gridSize);
-    if (turn == 1) {
-        grid[r][c] = "X ";
-        std::cout << "Player 1 played at: " << currentMove << std::endl << std::endl;
-        
-        lineCountX[r+1]++;
-        lineCountX[gridSize+c+1]++;
-        
-        if (r == c) {
-            lineCountX[gridSize+gridSize+1]++;
-        }
-        
-        if (r+c == gridSize-1) {
-            lineCountX[gridSize+gridSize+2]++;
-        }
-    } else if (turn == 2) {
-        grid[r][c] = "O ";
-        std::cout << "Player 2 played at: " << currentMove << std::endl << std::endl;
-        
-        lineCountO[r+1]++;
-        lineCountO[gridSize+c+1]++;
-        
-        if (r == c) {
-            lineCountO[gridSize+gridSize+1]++;
-        }
-        
-        if (r+c == gridSize-1) {
-            lineCountO[gridSize+gridSize+2]++;
-        }
-    }
-
-    filledCount++;
+// returns row and column for given move number (1-9 for gridSize == 3)
+position Tictactoe::moveToPosition(int Move) {
+    position pos;
+    Move = Move-1;
+    pos.row = Move/gridSize;
+    pos.col = Move%gridSize;
+    return pos;
 }
 
+// updates LineCount unordered_map whenever a move is played by any player
+void Tictactoe::updateLineCount(int Turn, bool isIncreament, position pos) {
+    if (isIncreament) {
+        lineCount[Turn][pos.row+1]++;
+        lineCount[Turn][gridSize+pos.col+1]++;
+        
+        if (pos.row == pos.col) {
+            lineCount[Turn][gridSize+gridSize+1]++;
+        }
+        
+        if (pos.row+pos.col == gridSize-1) {
+            lineCount[Turn][gridSize+gridSize+2]++;
+        }
+    } else {
+        lineCount[Turn][pos.row+1]--;
+        lineCount[Turn][gridSize+pos.col+1]--;
+        
+        if (pos.row == pos.col) {
+            lineCount[Turn][gridSize+gridSize+1]--;
+        }
+        
+        if (pos.row+pos.col == gridSize-1) {
+            lineCount[Turn][gridSize+gridSize+2]--;
+        }
+    }
+}
+
+// putMove function takes Turn (1 or 2 for 'X' and 'O' respectively) as input
+// and updates the grid
 void Tictactoe::putMove(int Turn, int Move) {
-    int x = Move-1;
-    int r = x/(gridSize);
-    int c = (x%gridSize);
+    position pos = moveToPosition(Move);
     if (Turn == 1) {
-        grid[r][c] = "X ";
-        lineCountX[r+1]++;
-        lineCountX[gridSize+c+1]++;
-        if (r == c) {
-            lineCountX[gridSize+gridSize+1]++;
-        }
-        if (r+c == gridSize-1) {
-            lineCountX[gridSize+gridSize+2]++;
-        }
+        grid[pos.row][pos.col] = "X ";
+        updateLineCount(Turn, true, pos);
     } else if (Turn == 2) {
-        grid[r][c] = "O ";
-        lineCountO[r+1]++;
-        lineCountO[gridSize+c+1]++;
-        if (r == c) {
-            lineCountO[gridSize+gridSize+1]++;
-        }
-        if (r+c == gridSize-1) {
-            lineCountO[gridSize+gridSize+2]++;
-        }
+        grid[pos.row][pos.col] = "O ";
+        updateLineCount(Turn, true, pos);
     }
 
     filledCount++;
@@ -161,32 +151,16 @@ void Tictactoe::putMove(int Turn, int Move) {
 
 // removes move (X / O) from grid
 void Tictactoe::removeMove(int Move, int Turn) {
-    int x = Move-1;
-    int r = x/(gridSize);
-    int c = (x%gridSize);
+    position pos = moveToPosition(Move);
     if(Move < 10) {
-        grid[r][c] = "0"+std::to_string(Move);
+        grid[pos.row][pos.col] = "0"+std::to_string(Move);
     } else {
-        grid[r][c] = std::to_string(Move);
+        grid[pos.row][pos.col] = std::to_string(Move);
     }
     if (Turn == 1) {
-        lineCountX[r+1]--;
-        lineCountX[gridSize+c+1]--;
-        if (r == c) {
-            lineCountX[gridSize+gridSize+1]--;
-        }
-        if (r+c == gridSize-1) {
-            lineCountX[gridSize+gridSize+2]--;
-        }
+        updateLineCount(Turn, false, pos);
     } else if (Turn == 2) {
-        lineCountO[r+1]--;
-        lineCountO[gridSize+c+1]--;
-        if (r == c) {
-            lineCountO[gridSize+gridSize+1]--;
-        }
-        if (r+c == gridSize-1) {
-            lineCountO[gridSize+gridSize+2]--;
-        }
+        updateLineCount(Turn, false, pos);
     }
     filledCount--;
 }
@@ -227,17 +201,16 @@ int Tictactoe::findScore(int Turn) {
     return 0; 
 }
 
-// checks if a particular position in grid is filled 
+// checks if a particular position (row, col) in grid is filled 
 bool Tictactoe::isFilled(int Move) {
-    int x = Move-1;
-    int r = x/(gridSize);
-    int c = (x%gridSize);
-    if (grid[r][c] == "X " || grid[r][c] == "O ") {
+    position pos = moveToPosition(Move);
+    if (grid[pos.row][pos.col] == "X " || grid[pos.row][pos.col] == "O ") {
         return true;
     }
     return false;
 }
 
+// minimax function is called recursively to find optimal move
 int Tictactoe::minimax(int Turn) {
     int score = findScore(Turn);
     int best = 0;
@@ -269,6 +242,7 @@ int Tictactoe::minimax(int Turn) {
     return best;
 }
 
+// getOptimalMove takes turn (1/2 : X/O) and outputs optimal move (1 - 9 (for gridSize 3))
 void Tictactoe::getOptimalMove(int Turn) {
     int bestScore = 0;
     int bestMove = 0;
@@ -312,18 +286,21 @@ std::string Tictactoe::play() {
             displayGrid();
             std::cout << std::endl;
             getUserMove();
-            putMove();
+            putMove(turn, currentMove);
+            std::cout << "Player 1 played at: " << currentMove << std::endl << std::endl;
             changeTurn();
         } else if (turn == 2){
             displayGrid();
             std::cout << std::endl;
             if(numPlayers == 1) {
                 getOptimalMove(turn);
-                putMove();
+                putMove(turn, currentMove);
+                std::cout << "Player 2 played at: " << currentMove << std::endl << std::endl;
                 changeTurn();
             } else if(numPlayers == 2) {
                 getUserMove();
-                putMove();
+                putMove(turn, currentMove);
+                std::cout << "Player 2 played at: " << currentMove << std::endl << std::endl;
                 changeTurn();
             }
         }

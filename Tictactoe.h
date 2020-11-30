@@ -5,6 +5,12 @@
 #include <set>
 #include <unordered_map>
 
+struct position
+{
+    int row;
+    int col;
+};
+
 class Tictactoe {
     private:
         int gridSize = 3;
@@ -12,14 +18,13 @@ class Tictactoe {
         int turn = 1;
         int currentMove = 0;
         std::vector<std::vector<std::string>> grid;
-        std::unordered_map<int, int> lineCountX;
-        std::unordered_map<int, int> lineCountO;
+        std::unordered_map<int, std::unordered_map<int, int>> lineCount;
         int filledCount = 0;
         
-        void putMove(int Turn, int Move);
         int minimax(int);
         int findScore(int Turn);
         void setLineCount(int grid_size);
+        void updateLineCount(int Turn, bool isIncrement, position pos);
     
     public:
         Tictactoe();
@@ -29,13 +34,14 @@ class Tictactoe {
         void displayGrid();
         void setNumPlayers();
         int isComplete();
+        void putMove(int Turn, int Move);
         void getOptimalMove(int Turn);
-        void putMove();
         void removeMove(int Move, int Turn);
         bool isMoveValid();
         void changeTurn();
         void getUserMove();
         bool isFilled(int Move);
+        position moveToPosition(int Move);
         std::string play();
 };
 
