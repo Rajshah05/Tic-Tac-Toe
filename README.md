@@ -2,6 +2,18 @@
 
 TicTacToe game in C++
 
+Uses minimax algorithm in game theory to find optimal move
+
+"play" member function uses all the member functions to run a tic-tac-toe game
+
+"isComplete" member function checks if any row, collumn or diagonal is completed. It aslo checks if all the cells are filled and therefore if game is draw
+
+"getOptimalMove" member function finds optimal move using minimax algorithm which is a backtracking algorithm that recursively places move on all the possible cells and calculates score for each move
+
+"setGrid" member function creates a grid (board) of desired size
+
+"reset" member function resets all the data members to initial condition
+
 
 To run the tic-tac-toe program compile using:
 
