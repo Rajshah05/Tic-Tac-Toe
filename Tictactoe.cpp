@@ -14,7 +14,7 @@ Tictactoe::Tictactoe(int grid_size) {
 
 }
 
-// resets the data members to initial condition
+// resets the data members to initial conditions
 void Tictactoe::reset() {
     numPlayers = 0;
     turn = 1;
