@@ -4,6 +4,8 @@ TicTacToe game in C++
 
 Uses minimax algorithm in game theory to find optimal move
 
+Majority of the code is located in the Tictactoe files.
+
 "play" member function uses all the member functions to run a tic-tac-toe game
 
 "isComplete" member function checks if any row, collumn or diagonal is completed. It aslo checks if all the cells are filled and therefore if game is draw
@@ -24,10 +26,6 @@ then Run the tic-tac-toe game program using:
 	./exec
 
 Tested with Ubuntu g++ 7.8.5 on Ubuntu 18.04
-
-Majority of the code is located in the Tictactoe files.
-
-
 
 
 To test the program compile using:
