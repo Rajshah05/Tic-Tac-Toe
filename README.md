@@ -4,7 +4,7 @@ TicTacToe game in C++
 
 Uses minimax algorithm in game theory to find optimal move
 
-Majority of the code is located in the Tictactoe files.
+Majority of the code is located in the Tictactoe.cpp file
 
 "play" member function uses all the member functions to run a tic-tac-toe game
 
@@ -14,7 +14,7 @@ Majority of the code is located in the Tictactoe files.
 
 "setGrid" member function creates a grid (board) of desired size
 
-"reset" member function resets all the data members to initial condition
+"reset" member function resets all the data members to initial conditions
 
 
 To run the tic-tac-toe program compile using:

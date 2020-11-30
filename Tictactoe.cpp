@@ -23,7 +23,7 @@ void Tictactoe::reset() {
     setLineCount(gridSize);
 }
 
-// creates a grid (board) of size grid_size
+// creates a grid (board) of size grid_size*grid_size
 void Tictactoe::setGrid(int grid_size) {
     auto n = 1;
     gridSize = grid_size;
@@ -46,6 +46,7 @@ void Tictactoe::setGrid(int grid_size) {
 // key 4,5,6 represents first, second, and third column
 // key 7, 8 represents left-right diagonal and right-left diagonal respecively
 // and its values represent the count of 'X' or 'O' in that particular row, column, and diagonal
+// This function is used to check if the game is completed or not
 
 void Tictactoe::setLineCount(int grid_size) {
     for (int i = 1; i <=  grid_size+grid_size+2; i++) {
@@ -79,11 +80,13 @@ void Tictactoe::changeTurn() {
     turn = turn==1?2:1;
 }
 
-// checks rows, columns, and diagonals for all crosses or zeros and checks for draw
+// This function returns 1 for win, 2 for draw, and 0 if the game is not yet completed
+// It checks rows, columns, and diagonals for all crosses or zeros and checks for draw
 // For 'X', if lineCount key 1 (which is another unordered_map) has any key whose corresponding value is equal to 3
 // then player 1 wins
 // Similarly, for 'O', if lineCount key 2 (which is another unordered_map) has any key whose corresponding value is equal to 3
 // then player 2 wins
+
 int Tictactoe::isComplete() {
     for(auto x : lineCount) {
         for (auto y : x.second) {
@@ -135,7 +138,7 @@ void Tictactoe::updateLineCount(int Turn, bool isIncreament, position pos) {
 }
 
 // putMove function takes Turn (1 or 2 for 'X' and 'O' respectively) and Move (1-9 for gridSize == 3) as input
-// and updates the grid
+// and updates the grid by placing 'X' or 'O' at given Move
 void Tictactoe::putMove(int Turn, int Move) {
     position pos = moveToPosition(Move);
     
@@ -150,7 +153,7 @@ void Tictactoe::putMove(int Turn, int Move) {
     filledCount++;
 }
 
-// removes (X / O) from grid and puts Move (1-9)
+// removes (X / O) from grid and puts Move number (1-9)
 void Tictactoe::removeMove(int Move, int Turn) {
     position pos = moveToPosition(Move);
     
@@ -185,7 +188,7 @@ void Tictactoe::getUserMove() {
     }
 }
 
-// finds score for minimax
+// finds score for optimal move
 int Tictactoe::findScore(int Turn) {
     int gridStatus = isComplete();
     if(gridStatus == 1){
@@ -201,7 +204,7 @@ int Tictactoe::findScore(int Turn) {
     return 0; 
 }
 
-// checks if a particular position (row, col) in grid is filled 
+// checks if a particular position (row, col) in grid is filled or not 
 bool Tictactoe::isFilled(int Move) {
     position pos = moveToPosition(Move);
     if (grid[pos.row][pos.col] == "X " || grid[pos.row][pos.col] == "O ") {
@@ -243,6 +246,9 @@ int Tictactoe::minimax(int Turn) {
 }
 
 // getOptimalMove takes turn (1/2 : X/O) and outputs optimal move (1 - 9 (for gridSize 3))
+
+// finds optimal move using minimax algorithm which is a backtracking algorithm that recursively places move on
+// all the possible cells and calculates score for each move
 void Tictactoe::getOptimalMove(int Turn) {
     int bestScore = 0;
     int bestMove = 0;
@@ -279,6 +285,8 @@ bool Tictactoe::isMoveValid() {
     return false;
 }
 
+// runs tictactoe game
+// this function calls rest of the member functions to run a tictactoe game
 std::string Tictactoe::play() {
     setNumPlayers();
     while(isComplete()==0) {
