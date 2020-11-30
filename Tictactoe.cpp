@@ -49,7 +49,12 @@ void Tictactoe::displayGrid() {
 void Tictactoe::setNumPlayers() {
     while(!(numPlayers == 1 || numPlayers == 2)) {
         std::cout << "Enter 1 for single player or 2 for double players: " << std::endl;
-        std::cin >> numPlayers;
+        if(!(std::cin >> numPlayers)) {
+            std::cout << "Please enter numbers only: ";
+            std::cin.clear();
+            std::cin.ignore(10000, '\n'); 
+        }
+
     }
 }
 
@@ -169,10 +174,18 @@ void Tictactoe::getUserMove() {
     while(!isMoveValid()) {
         if (turn == 1) {
             std::cout << "Player 1: press number to place your move: " << std::endl;
-            std::cin >> currentMove;
+            if(!(std::cin >> currentMove)) {
+                std::cout << "Please enter numbers only: ";
+                std::cin.clear();
+                std::cin.ignore(10000, '\n'); 
+            }
         } else if(turn == 2) {
             std::cout << "Player 2: press number to place your move: " << std::endl;
-            std::cin >> currentMove;
+            if(!(std::cin >> currentMove)) {
+                std::cout << "Please enter numbers only: ";
+                std::cin.clear();
+                std::cin.ignore(10000, '\n'); 
+            }
         }
     }
 }
@@ -284,7 +297,7 @@ std::string Tictactoe::play() {
             if(numPlayers == 1) {
                 getOptimalMove(turn);
                 putMove();
-                turn = 1;
+                changeTurn();
             } else if(numPlayers == 2) {
                 getUserMove();
                 putMove();
