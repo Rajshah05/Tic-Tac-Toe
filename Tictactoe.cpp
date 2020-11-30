@@ -318,5 +318,5 @@ std::string Tictactoe::play() {
         displayGrid();
         return "Match Draw";
     }
-        
+    return "";
 }
