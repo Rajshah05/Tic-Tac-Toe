@@ -12,13 +12,14 @@ class Tictactoe {
         int turn = 1;
         int currentMove = 0;
         std::vector<std::vector<std::string>> grid;
-        std::unordered_map<int, int> lineCount1;
-        std::unordered_map<int, int> lineCount2;
+        std::unordered_map<int, int> lineCountX;
+        std::unordered_map<int, int> lineCountO;
         int filledCount = 0;
         
         void putMove(int Turn, int Move);
         int minimax(int);
         int findScore(int Turn);
+        void setLineCount(int grid_size);
     
     public:
         Tictactoe();

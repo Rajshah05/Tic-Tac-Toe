@@ -27,8 +27,11 @@ then Run the tic-tac-toe game program using:
 
 Tested with Ubuntu g++ 7.8.5 on Ubuntu 18.04
 
+generated test cases to test the tic-tac-toe program
 
-To test the program compile using:
+Used Catch2 framework to write test cases
+
+To run the test cases compile the test file using:
 
 	g++ -O1 catch_amalgamated.cpp test.cpp Tictactoe.cpp -o test
 

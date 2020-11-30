@@ -6,19 +6,25 @@
 
 Tictactoe::Tictactoe() {
     setGrid(3);
+    setLineCount(3);
 }
 
 Tictactoe::Tictactoe(int grid_size) {
     setGrid(grid_size);
+    setLineCount(grid_size);
+
 }
 
+// resets the data members to initial condition
 void Tictactoe::reset() {
     numPlayers = 0;
     turn = 1;
     currentMove = 0;
     filledCount = 0;
+    setLineCount(gridSize);
 }
 
+// creates a grid (board)
 void Tictactoe::setGrid(int grid_size) {
     auto n = 1;
     gridSize = grid_size;
@@ -30,10 +36,16 @@ void Tictactoe::setGrid(int grid_size) {
             } else {
                 j = std::to_string(n);
             }
-            lineCount1[n] = 0;
-            lineCount2[n] = 0;
             n++;
         }
+    }
+}
+
+// 4-5 lines
+void Tictactoe::setLineCount(int grid_size) {
+    for (int i = 1; i <=  grid_size+grid_size+2; i++) {
+        lineCountX[i] = 0;
+        lineCountO[i] = 0;
     }
 }
 
@@ -62,13 +74,14 @@ void Tictactoe::changeTurn() {
     turn = turn==1?2:1;
 }
 
+// checks rows, columns, and diagonals for all crosses or zeros and checks for draw
 int Tictactoe::isComplete() {
-    for (auto x : lineCount1) {
+    for (auto x : lineCountX) {
         if (x.second == 3) {
             return 1;
         }
     }
-    for (auto x : lineCount2) {
+    for (auto x : lineCountO) {
         if (x.second == 3) {
             return 1;
         }
@@ -79,6 +92,7 @@ int Tictactoe::isComplete() {
     return 0;
 }
 
+// put move (X / O) in grid
 void Tictactoe::putMove() {
     int x = currentMove-1;
     int r = x/(gridSize);
@@ -86,85 +100,92 @@ void Tictactoe::putMove() {
     if (turn == 1) {
         grid[r][c] = "X ";
         std::cout << "Player 1 played at: " << currentMove << std::endl << std::endl;
-        lineCount1[r+1]++;
-        lineCount1[gridSize+c+1]++;
+        
+        lineCountX[r+1]++;
+        lineCountX[gridSize+c+1]++;
+        
         if (r == c) {
-            lineCount1[gridSize+gridSize+1]++;
+            lineCountX[gridSize+gridSize+1]++;
         }
+        
         if (r+c == gridSize-1) {
-            lineCount1[gridSize+gridSize+2]++;
+            lineCountX[gridSize+gridSize+2]++;
         }
     } else if (turn == 2) {
         grid[r][c] = "O ";
         std::cout << "Player 2 played at: " << currentMove << std::endl << std::endl;
-        lineCount2[r+1]++;
-        lineCount2[gridSize+c+1]++;
+        
+        lineCountO[r+1]++;
+        lineCountO[gridSize+c+1]++;
+        
         if (r == c) {
-            lineCount2[gridSize+gridSize+1]++;
+            lineCountO[gridSize+gridSize+1]++;
         }
+        
         if (r+c == gridSize-1) {
-            lineCount2[gridSize+gridSize+2]++;
+            lineCountO[gridSize+gridSize+2]++;
         }
     }
 
     filledCount++;
 }
 
-void Tictactoe::putMove(int tempTurn, int tempMove) {
-    int x = tempMove-1;
+void Tictactoe::putMove(int Turn, int Move) {
+    int x = Move-1;
     int r = x/(gridSize);
     int c = (x%gridSize);
-    if (tempTurn == 1) {
+    if (Turn == 1) {
         grid[r][c] = "X ";
-        lineCount1[r+1]++;
-        lineCount1[gridSize+c+1]++;
+        lineCountX[r+1]++;
+        lineCountX[gridSize+c+1]++;
         if (r == c) {
-            lineCount1[gridSize+gridSize+1]++;
+            lineCountX[gridSize+gridSize+1]++;
         }
         if (r+c == gridSize-1) {
-            lineCount1[gridSize+gridSize+2]++;
+            lineCountX[gridSize+gridSize+2]++;
         }
-    } else if (tempTurn == 2) {
+    } else if (Turn == 2) {
         grid[r][c] = "O ";
-        lineCount2[r+1]++;
-        lineCount2[gridSize+c+1]++;
+        lineCountO[r+1]++;
+        lineCountO[gridSize+c+1]++;
         if (r == c) {
-            lineCount2[gridSize+gridSize+1]++;
+            lineCountO[gridSize+gridSize+1]++;
         }
         if (r+c == gridSize-1) {
-            lineCount2[gridSize+gridSize+2]++;
+            lineCountO[gridSize+gridSize+2]++;
         }
     }
 
     filledCount++;
 }
 
-void Tictactoe::removeMove(int tempMove, int tempTurn) {
-    int x = tempMove-1;
+// removes move (X / O) from grid
+void Tictactoe::removeMove(int Move, int Turn) {
+    int x = Move-1;
     int r = x/(gridSize);
     int c = (x%gridSize);
-    if(tempMove < 10) {
-        grid[r][c] = "0"+std::to_string(tempMove);
+    if(Move < 10) {
+        grid[r][c] = "0"+std::to_string(Move);
     } else {
-        grid[r][c] = std::to_string(tempMove);
+        grid[r][c] = std::to_string(Move);
     }
-    if (tempTurn == 1) {
-        lineCount1[r+1]--;
-        lineCount1[gridSize+c+1]--;
+    if (Turn == 1) {
+        lineCountX[r+1]--;
+        lineCountX[gridSize+c+1]--;
         if (r == c) {
-            lineCount1[gridSize+gridSize+1]--;
+            lineCountX[gridSize+gridSize+1]--;
         }
         if (r+c == gridSize-1) {
-            lineCount1[gridSize+gridSize+2]--;
+            lineCountX[gridSize+gridSize+2]--;
         }
-    } else if (tempTurn == 2) {
-        lineCount2[r+1]--;
-        lineCount2[gridSize+c+1]--;
+    } else if (Turn == 2) {
+        lineCountO[r+1]--;
+        lineCountO[gridSize+c+1]--;
         if (r == c) {
-            lineCount2[gridSize+gridSize+1]--;
+            lineCountO[gridSize+gridSize+1]--;
         }
         if (r+c == gridSize-1) {
-            lineCount2[gridSize+gridSize+2]--;
+            lineCountO[gridSize+gridSize+2]--;
         }
     }
     filledCount--;
@@ -190,12 +211,13 @@ void Tictactoe::getUserMove() {
     }
 }
 
-int Tictactoe::findScore(int tempTurn) {
+// finds score for minimax
+int Tictactoe::findScore(int Turn) {
     int gridStatus = isComplete();
     if(gridStatus == 1){
-        if(tempTurn == 1) {
+        if(Turn == 1) {
             return -10;
-        } else if (tempTurn == 2) {
+        } else if (Turn == 2) {
             return 10;
         }
     }
@@ -205,6 +227,7 @@ int Tictactoe::findScore(int tempTurn) {
     return 0; 
 }
 
+// checks if a particular position in grid is filled 
 bool Tictactoe::isFilled(int Move) {
     int x = Move-1;
     int r = x/(gridSize);
@@ -215,8 +238,8 @@ bool Tictactoe::isFilled(int Move) {
     return false;
 }
 
-int Tictactoe::minimax(int tempTurn) {
-    int score = findScore(tempTurn);
+int Tictactoe::minimax(int Turn) {
+    int score = findScore(Turn);
     int best = 0;
     if(score == 10 || score == -10) {
         return score;
@@ -224,47 +247,47 @@ int Tictactoe::minimax(int tempTurn) {
     if(score == 1) {
         return 0;
     }
-    if(tempTurn == 1) {
+    if(Turn == 1) {
         best = -1000000;
-        for(int move1 = 1; move1 <= gridSize*gridSize; move1++) {
-            if(isFilled(move1) == false) {
-                putMove(tempTurn, move1);
-                best = std::max(best, minimax(tempTurn==1?2:1));
-                removeMove(move1, tempTurn);
+        for(int move = 1; move <= gridSize*gridSize; move++) {
+            if(isFilled(move) == false) {
+                putMove(Turn, move);
+                best = std::max(best, minimax(Turn==1?2:1));
+                removeMove(move, Turn);
             }
         }
-    } else if (tempTurn == 2) {
+    } else if (Turn == 2) {
         best = 1000000;
-        for(int move2 = 1; move2 <= gridSize*gridSize; move2++) {
-            if(isFilled(move2) == false) {
-                putMove(tempTurn, move2);
-                best = std::min(best, minimax(tempTurn==1?2:1));
-                removeMove(move2, tempTurn);
+        for(int move = 1; move <= gridSize*gridSize; move++) {
+            if(isFilled(move) == false) {
+                putMove(Turn, move);
+                best = std::min(best, minimax(Turn==1?2:1));
+                removeMove(move, Turn);
             }
         }
     }
     return best;
 }
 
-void Tictactoe::getOptimalMove(int tempTurn) {
+void Tictactoe::getOptimalMove(int Turn) {
     int bestScore = 0;
     int bestMove = 0;
-    if(tempTurn == 1) {
+    if(Turn == 1) {
         bestScore = -1000000;
-    } else if (tempTurn == 2) {
+    } else if (Turn == 2) {
         bestScore = 1000000;
     }
     for(int moveo = 1; moveo <= gridSize*gridSize; moveo++) { 
         if(isFilled(moveo) == false) {
-            putMove(tempTurn, moveo);
-            int moveScore = minimax(tempTurn==1?2:1);
-            removeMove(moveo, tempTurn);
-            if(tempTurn == 1) {
+            putMove(Turn, moveo);
+            int moveScore = minimax(Turn==1?2:1);
+            removeMove(moveo, Turn);
+            if(Turn == 1) {
                 if(moveScore > bestScore) {
                     bestScore = moveScore;
                     bestMove = moveo;
                 }
-            } else if (tempTurn == 2) {
+            } else if (Turn == 2) {
                 if(moveScore < bestScore) {
                     bestScore = moveScore;
                     bestMove = moveo;
