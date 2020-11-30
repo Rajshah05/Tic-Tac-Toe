@@ -134,34 +134,34 @@ void Tictactoe::updateLineCount(int Turn, bool isIncreament, position pos) {
     }
 }
 
-// putMove function takes Turn (1 or 2 for 'X' and 'O' respectively) as input
+// putMove function takes Turn (1 or 2 for 'X' and 'O' respectively) and Move (1-9 for gridSize == 3) as input
 // and updates the grid
 void Tictactoe::putMove(int Turn, int Move) {
     position pos = moveToPosition(Move);
+    
     if (Turn == 1) {
         grid[pos.row][pos.col] = "X ";
-        updateLineCount(Turn, true, pos);
     } else if (Turn == 2) {
         grid[pos.row][pos.col] = "O ";
-        updateLineCount(Turn, true, pos);
     }
+
+    updateLineCount(Turn, true, pos);
 
     filledCount++;
 }
 
-// removes move (X / O) from grid
+// removes (X / O) from grid and puts Move (1-9)
 void Tictactoe::removeMove(int Move, int Turn) {
     position pos = moveToPosition(Move);
+    
     if(Move < 10) {
         grid[pos.row][pos.col] = "0"+std::to_string(Move);
     } else {
         grid[pos.row][pos.col] = std::to_string(Move);
     }
-    if (Turn == 1) {
-        updateLineCount(Turn, false, pos);
-    } else if (Turn == 2) {
-        updateLineCount(Turn, false, pos);
-    }
+    
+    updateLineCount(Turn, false, pos);
+    
     filledCount--;
 }
 
