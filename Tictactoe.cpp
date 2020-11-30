@@ -8,11 +8,21 @@ Tictactoe::Tictactoe() {
     setGrid(3);
 }
 
+Tictactoe::Tictactoe(int grid_size) {
+    setGrid(grid_size);
+}
+
+void Tictactoe::reset() {
+    numPlayers = 0;
+    turn = 1;
+    currentMove = 0;
+    filledCount = 0;
+}
+
 void Tictactoe::setGrid(int grid_size) {
     auto n = 1;
     gridSize = grid_size;
     grid = std::vector<std::vector<std::string>> (gridSize, std::vector<std::string>(gridSize));
-    filled = std::vector<bool> (gridSize*gridSize);
     for(auto& i : grid) {
         for(auto& j : i) {
             if(n < 10) {
@@ -20,8 +30,9 @@ void Tictactoe::setGrid(int grid_size) {
             } else {
                 j = std::to_string(n);
             }
+            lineCount1[n] = 0;
+            lineCount2[n] = 0;
             n++;
-            filled[n-1] = false;
         }
     }
 }
@@ -42,52 +53,22 @@ void Tictactoe::setNumPlayers() {
     }
 }
 
-bool Tictactoe::checkCrossed(std::set<std::string> line) {
-    if(line.size() == 1 && (line.count("X ") == 1 || line.count("O ")==1)) {
-        return true;
-    }
-    return false;
-}
-
 void Tictactoe::changeTurn() {
     turn = turn==1?2:1;
 }
 
 int Tictactoe::isComplete() {
-    std::unordered_map<int,std::set<std::string>> row_set;
-    std::unordered_map<int,std::set<std::string>> col_set;
-    std::set<std::string> leftRightDiagonal;
-    std::set<std::string> rightLeftDiagonal;
-    int filledCount = 0;
-    for (int i = 0; i < grid.size(); i++) {
-        for (int j = 0; j < grid[0].size(); j++) {
-            row_set[i].insert(grid[i][j]);
-            col_set[j].insert(grid[i][j]);
-            if(i==j) {
-                leftRightDiagonal.insert(grid[i][j]);
-            }
-            if (i+j == gridSize-1) {
-                rightLeftDiagonal.insert(grid[i][j]);
-            }
-            if (grid[i][j] == "X " || grid[i][j] == "O ") {
-                filledCount++;
-            }
-        }
-        if(checkCrossed(row_set[i])) {
+    for (auto x : lineCount1) {
+        if (x.second == 3) {
             return 1;
         }
     }
-    for (int i = 0; i < gridSize; i++) {
-        if(checkCrossed(col_set[i])) {
+    for (auto x : lineCount2) {
+        if (x.second == 3) {
             return 1;
         }
     }
-    if(checkCrossed(leftRightDiagonal) || checkCrossed(rightLeftDiagonal)) {
-        return 1;
-    }
-
-
-    if (filledCount == gridSize*gridSize) {
+    if(filledCount == gridSize*gridSize) {
         return 2;
     }
     return 0;
@@ -99,10 +80,29 @@ void Tictactoe::putMove() {
     int c = (x%gridSize);
     if (turn == 1) {
         grid[r][c] = "X ";
+        std::cout << "Player 1 played at: " << currentMove << std::endl << std::endl;
+        lineCount1[r+1]++;
+        lineCount1[gridSize+c+1]++;
+        if (r == c) {
+            lineCount1[gridSize+gridSize+1]++;
+        }
+        if (r+c == gridSize-1) {
+            lineCount1[gridSize+gridSize+2]++;
+        }
     } else if (turn == 2) {
         grid[r][c] = "O ";
+        std::cout << "Player 2 played at: " << currentMove << std::endl << std::endl;
+        lineCount2[r+1]++;
+        lineCount2[gridSize+c+1]++;
+        if (r == c) {
+            lineCount2[gridSize+gridSize+1]++;
+        }
+        if (r+c == gridSize-1) {
+            lineCount2[gridSize+gridSize+2]++;
+        }
     }
-    filled[x] = true;
+
+    filledCount++;
 }
 
 void Tictactoe::putMove(int tempTurn, int tempMove) {
@@ -111,13 +111,30 @@ void Tictactoe::putMove(int tempTurn, int tempMove) {
     int c = (x%gridSize);
     if (tempTurn == 1) {
         grid[r][c] = "X ";
+        lineCount1[r+1]++;
+        lineCount1[gridSize+c+1]++;
+        if (r == c) {
+            lineCount1[gridSize+gridSize+1]++;
+        }
+        if (r+c == gridSize-1) {
+            lineCount1[gridSize+gridSize+2]++;
+        }
     } else if (tempTurn == 2) {
         grid[r][c] = "O ";
+        lineCount2[r+1]++;
+        lineCount2[gridSize+c+1]++;
+        if (r == c) {
+            lineCount2[gridSize+gridSize+1]++;
+        }
+        if (r+c == gridSize-1) {
+            lineCount2[gridSize+gridSize+2]++;
+        }
     }
-    filled[x] = true;
+
+    filledCount++;
 }
 
-void Tictactoe::removeMove(int tempMove) {
+void Tictactoe::removeMove(int tempMove, int tempTurn) {
     int x = tempMove-1;
     int r = x/(gridSize);
     int c = (x%gridSize);
@@ -126,7 +143,38 @@ void Tictactoe::removeMove(int tempMove) {
     } else {
         grid[r][c] = std::to_string(tempMove);
     }
-    filled[x] = false;
+    if (tempTurn == 1) {
+        lineCount1[r+1]--;
+        lineCount1[gridSize+c+1]--;
+        if (r == c) {
+            lineCount1[gridSize+gridSize+1]--;
+        }
+        if (r+c == gridSize-1) {
+            lineCount1[gridSize+gridSize+2]--;
+        }
+    } else if (tempTurn == 2) {
+        lineCount2[r+1]--;
+        lineCount2[gridSize+c+1]--;
+        if (r == c) {
+            lineCount2[gridSize+gridSize+1]--;
+        }
+        if (r+c == gridSize-1) {
+            lineCount2[gridSize+gridSize+2]--;
+        }
+    }
+    filledCount--;
+}
+
+void Tictactoe::getUserMove() {
+    while(!isMoveValid()) {
+        if (turn == 1) {
+            std::cout << "Player 1: press number to place your move: " << std::endl;
+            std::cin >> currentMove;
+        } else if(turn == 2) {
+            std::cout << "Player 2: press number to place your move: " << std::endl;
+            std::cin >> currentMove;
+        }
+    }
 }
 
 int Tictactoe::findScore(int tempTurn) {
@@ -144,6 +192,15 @@ int Tictactoe::findScore(int tempTurn) {
     return 0; 
 }
 
+bool Tictactoe::isFilled(int Move) {
+    int x = Move-1;
+    int r = x/(gridSize);
+    int c = (x%gridSize);
+    if (grid[r][c] == "X " || grid[r][c] == "O ") {
+        return true;
+    }
+    return false;
+}
 
 int Tictactoe::minimax(int tempTurn) {
     int score = findScore(tempTurn);
@@ -157,26 +214,26 @@ int Tictactoe::minimax(int tempTurn) {
     if(tempTurn == 1) {
         best = -1000000;
         for(int move1 = 1; move1 <= gridSize*gridSize; move1++) {
-            if(filled[move1-1] == false) {
+            if(isFilled(move1) == false) {
                 putMove(tempTurn, move1);
                 best = std::max(best, minimax(tempTurn==1?2:1));
-                removeMove(move1);
+                removeMove(move1, tempTurn);
             }
         }
     } else if (tempTurn == 2) {
         best = 1000000;
         for(int move2 = 1; move2 <= gridSize*gridSize; move2++) {
-            if(filled[move2-1] == false) {
+            if(isFilled(move2) == false) {
                 putMove(tempTurn, move2);
                 best = std::min(best, minimax(tempTurn==1?2:1));
-                removeMove(move2);
+                removeMove(move2, tempTurn);
             }
         }
     }
     return best;
 }
 
-int Tictactoe::optimalComputerMove(int tempTurn) {
+void Tictactoe::getOptimalMove(int tempTurn) {
     int bestScore = 0;
     int bestMove = 0;
     if(tempTurn == 1) {
@@ -185,10 +242,10 @@ int Tictactoe::optimalComputerMove(int tempTurn) {
         bestScore = 1000000;
     }
     for(int moveo = 1; moveo <= gridSize*gridSize; moveo++) { 
-        if(filled[moveo-1] == false) {
+        if(isFilled(moveo) == false) {
             putMove(tempTurn, moveo);
             int moveScore = minimax(tempTurn==1?2:1);
-            removeMove(moveo);
+            removeMove(moveo, tempTurn);
             if(tempTurn == 1) {
                 if(moveScore > bestScore) {
                     bestScore = moveScore;
@@ -202,11 +259,11 @@ int Tictactoe::optimalComputerMove(int tempTurn) {
             }
         }
     }
-    return bestMove;
+    currentMove = bestMove;
 }
 
 bool Tictactoe::isMoveValid() {
-    if(currentMove > 0 && currentMove <= gridSize*gridSize && filled[currentMove-1] == false) { 
+    if(currentMove > 0 && currentMove <= gridSize*gridSize && isFilled(currentMove) == false) { 
         return true;
     }
     return false;
@@ -218,25 +275,18 @@ std::string Tictactoe::play() {
         if(turn==1) {
             displayGrid();
             std::cout << std::endl;
-            while(!isMoveValid()) {
-                std::cout << "Player 1: press number to place your move: " << std::endl;
-                std::cin >> currentMove;
-            }
+            getUserMove();
             putMove();
             changeTurn();
         } else if (turn == 2){
             displayGrid();
             std::cout << std::endl;
             if(numPlayers == 1) {
-                currentMove = optimalComputerMove(turn);
-                std::cout << "Computer played at: " << currentMove << std::endl << std::endl;
+                getOptimalMove(turn);
                 putMove();
                 turn = 1;
             } else if(numPlayers == 2) {
-                while(!isMoveValid()) {
-                    std::cout << "Player 2: press number to place your move: " << std::endl;
-                    std::cin >> currentMove;
-                }
+                getUserMove();
                 putMove();
                 changeTurn();
             }
@@ -245,17 +295,14 @@ std::string Tictactoe::play() {
     if(isComplete() == 1) {
         if(turn == 1) {
             displayGrid();
-            // std::cout << "Player 2 wins!!!" << std::endl;
             return "Player 2 wins!!!";
         } else if (turn == 2) {
             displayGrid();
-            // std::cout << "Player 1 wins!!!" << std::endl;
             return "Player 1 wins!!!";
         }
     }
     if (isComplete()==2) {
         displayGrid();
-        // std::cout << "Match Draw" << std::endl;
         return "Match Draw";
     }
         

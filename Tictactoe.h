@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include <set>
+#include <unordered_map>
 
 class Tictactoe {
     private:
@@ -11,24 +12,29 @@ class Tictactoe {
         int turn = 1;
         int currentMove = 0;
         std::vector<std::vector<std::string>> grid;
-        std::vector<bool> filled;
+        std::unordered_map<int, int> lineCount1;
+        std::unordered_map<int, int> lineCount2;
+        int filledCount = 0;
         
-        bool checkCrossed(std::set<std::string> line);
-        void putMove(int tempTurn, int tempMove);
+        void putMove(int Turn, int Move);
         int minimax(int);
-        int findScore(int tempTurn);
+        int findScore(int Turn);
     
     public:
         Tictactoe();
-        void setGrid(int);
+        Tictactoe(int grid_size);
+        void reset();
+        void setGrid(int grid_size);
         void displayGrid();
         void setNumPlayers();
         int isComplete();
-        int optimalComputerMove(int);
+        void getOptimalMove(int Turn);
         void putMove();
-        void removeMove(int);
+        void removeMove(int Move, int Turn);
         bool isMoveValid();
         void changeTurn();
+        void getUserMove();
+        bool isFilled(int Move);
         std::string play();
 };
 
