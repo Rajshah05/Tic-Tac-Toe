@@ -13,13 +13,13 @@ struct position
 
 class Tictactoe {
     private:
-        int gridSize = 3;
-        int numPlayers = 0;
-        int turn = 1;
-        int currentMove = 0;
+        int gridSize;
+        int numPlayers;
+        int turn;
+        int currentMove;
         std::vector<std::vector<std::string>> grid;
         std::unordered_map<int, std::unordered_map<int, int>> lineCount;
-        int filledCount = 0;
+        int filledCount;
         
         int minimax(int);
         int findScore(int Turn);

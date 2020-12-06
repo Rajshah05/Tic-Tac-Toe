@@ -6,12 +6,19 @@
 Tictactoe::Tictactoe() {
     setGrid(3);
     setLineCount(3);
+    numPlayers = 0;
+    turn = 1;
+    currentMove = 0;
+    filledCount = 0;
 }
 
 Tictactoe::Tictactoe(int grid_size) {
     setGrid(grid_size);
     setLineCount(grid_size);
-
+    numPlayers = 0;
+    turn = 1;
+    currentMove = 0;
+    filledCount = 0;
 }
 
 // resets the data members to initial conditions
