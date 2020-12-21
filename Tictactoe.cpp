@@ -97,7 +97,7 @@ void Tictactoe::changeTurn() {
 int Tictactoe::isComplete() {
     for(auto x : lineCount) {
         for (auto y : x.second) {
-            if (y.second == 3) {
+            if (y.second == gridSize) {
                 return 1;
             }
         }
